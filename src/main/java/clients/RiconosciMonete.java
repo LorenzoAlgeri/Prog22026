@@ -21,4 +21,41 @@ along with this file.  If not, see <https://www.gnu.org/licenses/>.
 
 package clients;
 
-public class RiconosciMonete {}
+import java.util.Scanner;
+import macchinette.Importo;
+import macchinette.Moneta;
+
+/** Client che legge importi e stampa il valore della moneta corrispondente o "invalid". */
+public class RiconosciMonete {
+
+  /**
+   * Metodo principale.
+   *
+   * @param args argomenti della linea di comando (non utilizzati)
+   */
+  public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+
+    while (scanner.hasNextLine()) {
+      String line = scanner.nextLine().trim();
+      if (line.isEmpty()) continue;
+
+      Importo importo;
+      try {
+        importo = Importo.parse(line);
+      } catch (IllegalArgumentException e) {
+        System.out.println("invalid");
+        continue;
+      }
+
+      Moneta moneta = Moneta.fromImporto(importo);
+      if (moneta == null) {
+        System.out.println("invalid");
+      } else {
+        System.out.println(moneta);
+      }
+    }
+
+    scanner.close();
+  }
+}
