@@ -21,4 +21,42 @@ along with this file.  If not, see <https://www.gnu.org/licenses/>.
 
 package clients;
 
-public class OrdinaProdotti {}
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+import macchinette.Prodotto;
+
+/** Client che legge prodotti e li stampa ordinati secondo l'ordine naturale. */
+public class OrdinaProdotti {
+
+  /**
+   * Metodo principale.
+   *
+   * @param args argomenti della linea di comando (non utilizzati)
+   */
+  public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+    List<Prodotto> prodotti = new ArrayList<>();
+
+    while (scanner.hasNextLine()) {
+      String line = scanner.nextLine().trim();
+      if (line.isEmpty()) continue;
+
+      try {
+        Prodotto p = Prodotto.parse(line);
+        prodotti.add(p);
+      } catch (IllegalArgumentException e) {
+        // Ignora linee non valide
+      }
+    }
+
+    Collections.sort(prodotti);
+
+    for (Prodotto p : prodotti) {
+      System.out.println(p);
+    }
+
+    scanner.close();
+  }
+}
