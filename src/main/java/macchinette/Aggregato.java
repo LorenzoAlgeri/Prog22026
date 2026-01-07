@@ -77,16 +77,21 @@ public class Aggregato implements Iterable<Map.Entry<Moneta, Integer>> {
    * @param quantita quantità da aggiungere (&gt; 0)
    */
   public void aggiungi(Moneta moneta, int quantita) {
-    Objects.requireNonNull(moneta, "moneta null");
+    if (moneta == null) throw new NullPointerException("moneta null");
     if (quantita <= 0) throw new IllegalArgumentException("quantità non positiva");
-    monete.merge(moneta, quantita, Integer::sum);
+    // aggiunge alla mappa
+    int vecchio = monete.getOrDefault(moneta, 0);
+    monete.put(moneta, vecchio + quantita);
   }
 
   /** Aggiunge tutte le monete di un altro aggregato. */
   public void aggiungi(Aggregato altro) {
     Objects.requireNonNull(altro);
     for (Map.Entry<Moneta, Integer> e : altro.monete.entrySet()) {
-      monete.merge(e.getKey(), e.getValue(), Integer::sum);
+      Moneta m = e.getKey();
+      int q = e.getValue();
+      int old = monete.getOrDefault(m, 0);
+      monete.put(m, old + q);
     }
   }
 

@@ -55,17 +55,14 @@ public final class Importo implements Comparable<Importo> {
     this.centesimiTotali = centesimiTotali;
   }
 
-  /** Restituisce le unità. */
   public int unita() {
     return centesimiTotali / 100;
   }
 
-  /** Restituisce i centesimi (0-99). */
   public int centesimi() {
     return centesimiTotali % 100;
   }
 
-  /** Restituisce il valore totale in centesimi. */
   public int inCentesimi() {
     return centesimiTotali;
   }
@@ -118,15 +115,13 @@ public final class Importo implements Comparable<Importo> {
     return this.centesimiTotali / divisore.centesimiTotali;
   }
 
-  /** Verifica se questo importo è maggiore dell'altro. */
   public boolean maggioreDi(Importo altro) {
     Objects.requireNonNull(altro);
     return this.centesimiTotali > altro.centesimiTotali;
   }
 
-  /** Verifica se questo importo è minore dell'altro. */
   public boolean minoreDi(Importo altro) {
-    Objects.requireNonNull(altro);
+    if (altro == null) throw new NullPointerException();
     return this.centesimiTotali < altro.centesimiTotali;
   }
 
@@ -191,12 +186,15 @@ public final class Importo implements Comparable<Importo> {
 
     if (u == 0 && c == 0) return "0 cents";
 
-    StringBuilder sb = new StringBuilder();
-    if (u > 0) sb.append(u).append(u == 1 ? " unit" : " units");
-    if (c > 0) {
-      if (u > 0) sb.append(" ");
-      sb.append(c).append(c == 1 ? " cent" : " cents");
+    // costruisce la stringa
+    String result = "";
+    if (u > 0) {
+      result = u + (u == 1 ? " unit" : " units");
     }
-    return sb.toString();
+    if (c > 0) {
+      if (u > 0) result = result + " ";
+      result = result + c + (c == 1 ? " cent" : " cents");
+    }
+    return result;
   }
 }

@@ -49,13 +49,16 @@ public class BinarioException extends Exception {
    * @param motivo causa dell'errore
    */
   public BinarioException(Motivo motivo) {
-    super(switch (motivo) {
-      case SIZE -> "size";
-      case CAPACITY -> "capacity";
-      case ITEM -> "item";
-      case EMPTY -> "empty";
-    });
+    super(toMessage(motivo));
     this.motivo = motivo;
+  }
+
+  // converte motivo in stringa per getMessage()
+  private static String toMessage(Motivo m) {
+    if (m == Motivo.SIZE) return "size";
+    if (m == Motivo.CAPACITY) return "capacity";
+    if (m == Motivo.ITEM) return "item";
+    return "empty";
   }
 
   /** Restituisce il motivo. */

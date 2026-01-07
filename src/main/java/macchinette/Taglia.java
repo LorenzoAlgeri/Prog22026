@@ -48,11 +48,10 @@ public enum Taglia {
    */
   public static Taglia parse(String s) {
     if (s == null) throw new NullPointerException();
-    return switch (s.trim().toUpperCase()) {
-      case "S" -> S;
-      case "M" -> M;
-      case "L" -> L;
-      default -> throw new IllegalArgumentException("taglia non valida: " + s);
-    };
+    String t = s.trim().toUpperCase();
+    if (t.equals("S")) return S;
+    if (t.equals("M")) return M;
+    if (t.equals("L")) return L;
+    throw new IllegalArgumentException("taglia non valida: " + s);
   }
 }

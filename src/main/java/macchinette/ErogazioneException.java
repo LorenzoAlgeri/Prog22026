@@ -49,13 +49,15 @@ public class ErogazioneException extends Exception {
    * @param motivo causa dell'errore
    */
   public ErogazioneException(Motivo motivo) {
-    super(switch (motivo) {
-      case SLOT -> "slot";
-      case EMPTY -> "empty";
-      case VALUE -> "value";
-      case CHANGE -> "change";
-    });
+    super(motivoToString(motivo));
     this.motivo = motivo;
+  }
+
+  private static String motivoToString(Motivo m) {
+    if (m == Motivo.SLOT) return "slot";
+    else if (m == Motivo.EMPTY) return "empty";
+    else if (m == Motivo.VALUE) return "value";
+    else return "change";
   }
 
   /** Restituisce il motivo. */

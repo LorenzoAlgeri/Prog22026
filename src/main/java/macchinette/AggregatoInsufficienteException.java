@@ -45,8 +45,16 @@ public class AggregatoInsufficienteException extends Exception {
    * @param motivo causa dell'errore
    */
   public AggregatoInsufficienteException(Motivo motivo) {
-    super(motivo == Motivo.VALUE ? "value" : "coins");
+    super(getMessaggio(motivo));
     this.motivo = motivo;
+  }
+
+  private static String getMessaggio(Motivo m) {
+    if (m == Motivo.VALUE) {
+      return "value";
+    } else {
+      return "coins";
+    }
   }
 
   /** Restituisce il motivo. */
