@@ -23,62 +23,43 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Strategia di calcolo del resto che preferisce le monete di valore maggiore.
+ * Strategia greedy che parte dalle monete di valore maggiore.
  *
- * <p>Questa strategia (greedy) parte dalle monete di valore più alto e scende verso quelle di
- * valore più basso, usando il massimo numero possibile di ogni denominazione.
- *
- * <p>Non garantisce di trovare una soluzione anche quando esiste (es. resto di 6 cent con solo
- * monete da 5 e 2 cent: questa strategia proverebbe 5+? ma non troverebbe soluzione, mentre 2+2+2
- * funzionerebbe).
+ * <p>Non garantisce di trovare soluzione anche quando esiste.
  */
 public class StrategiaRestoH implements StrategiaResto {
 
-  /** Istanza singleton della strategia. */
   public static final StrategiaRestoH INSTANCE = new StrategiaRestoH();
 
-  /** Costruttore privato per il pattern singleton. */
   private StrategiaRestoH() {}
 
   @Override
   public Optional<Aggregato> calcola(Importo resto, Aggregato disponibile) {
-    Objects.requireNonNull(resto, "L'importo del resto non può essere null");
-    Objects.requireNonNull(disponibile, "L'aggregato disponibile non può essere null");
+    Objects.requireNonNull(resto);
+    Objects.requireNonNull(disponibile);
 
-    if (resto.equals(Importo.ZERO)) {
-      return Optional.of(new Aggregato());
-    }
-
-    // Verifica se il valore totale è sufficiente
-    if (disponibile.valoreTotale().minoreDi(resto)) {
-      return Optional.empty();
-    }
+    if (resto.equals(Importo.ZERO)) return Optional.of(new Aggregato());
+    if (disponibile.valoreTotale().minoreDi(resto)) return Optional.empty();
 
     Aggregato risultato = new Aggregato();
     int rimanente = resto.inCentesimi();
 
-    // Itera sulle monete dall'alto verso il basso (ordine inverso dell'enum)
     Moneta[] monete = Moneta.values();
     for (int i = monete.length - 1; i >= 0 && rimanente > 0; i--) {
       Moneta m = monete[i];
-      int valoreMoneta = m.valore().inCentesimi();
-      int disponibili = disponibile.quantita(m);
+      int valore = m.valore().inCentesimi();
+      int disp = disponibile.quantita(m);
 
-      if (disponibili > 0 && valoreMoneta <= rimanente) {
-        // Quante monete di questo tipo possiamo usare?
-        int daUsare = Math.min(rimanente / valoreMoneta, disponibili);
+      if (disp > 0 && valore <= rimanente) {
+        int daUsare = Math.min(rimanente / valore, disp);
         if (daUsare > 0) {
           risultato.aggiungi(m, daUsare);
-          rimanente -= daUsare * valoreMoneta;
+          rimanente -= daUsare * valore;
         }
       }
     }
 
-    if (rimanente == 0) {
-      return Optional.of(risultato);
-    } else {
-      return Optional.empty();
-    }
+    return rimanente == 0 ? Optional.of(risultato) : Optional.empty();
   }
 
   @Override

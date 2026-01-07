@@ -20,49 +20,36 @@
 package macchinette;
 
 /**
- * Eccezione sollevata quando non è possibile rimuovere un aggregato da un altro.
+ * Eccezione per rimozione impossibile da un aggregato.
  *
- * <p>Ci sono due possibili motivi:
- *
- * <ul>
- *   <li>{@link Motivo#VALUE}: il valore totale dell'aggregato da cui rimuovere è insufficiente
- *   <li>{@link Motivo#COINS}: il valore totale è sufficiente, ma mancano monete di un certo taglio
- * </ul>
+ * <p>Motivi: {@link Motivo#VALUE} se valore insufficiente,
+ * {@link Motivo#COINS} se mancano monete del taglio richiesto.
  */
 public class AggregatoInsufficienteException extends Exception {
 
   private static final long serialVersionUID = 1L;
 
-  /** I possibili motivi dell'insufficienza. */
+  /** Motivi dell'insufficienza. */
   public enum Motivo {
-    /** Il valore totale è insufficiente. */
+    /** Valore totale insufficiente. */
     VALUE,
-    /** Mancano monete di un certo taglio. */
+    /** Monete del taglio richiesto insufficienti. */
     COINS
   }
 
-  /** Il motivo dell'insufficienza. */
   private final Motivo motivo;
 
   /**
-   * Costruisce l'eccezione con il motivo specificato.
+   * Crea l'eccezione con il motivo specificato.
    *
-   * @param motivo il motivo dell'insufficienza, non deve essere null
-   * @throws NullPointerException se motivo è null
+   * @param motivo causa dell'errore
    */
   public AggregatoInsufficienteException(Motivo motivo) {
     super(motivo == Motivo.VALUE ? "value" : "coins");
-    if (motivo == null) {
-      throw new NullPointerException("Il motivo non può essere null");
-    }
     this.motivo = motivo;
   }
 
-  /**
-   * Restituisce il motivo dell'insufficienza.
-   *
-   * @return il motivo
-   */
+  /** Restituisce il motivo. */
   public Motivo motivo() {
     return motivo;
   }

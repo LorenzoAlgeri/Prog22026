@@ -22,138 +22,89 @@ package macchinette;
 import java.util.Objects;
 
 /**
- * Rappresenta un prodotto vendibile in un distributore automatico.
+ * Prodotto vendibile, immutabile. Ordinamento: taglia, nome, prezzo.
  *
- * <p>Un prodotto è caratterizzato da un nome, un prezzo e una taglia. Questa classe è immutabile.
+ * <p><strong>RI:</strong> nome != null &amp;&amp; !nome.isBlank() &amp;&amp; prezzo != null
+ * &amp;&amp; taglia != null
  *
- * <p><strong>Invariante di rappresentazione:</strong> nome != null &amp;&amp; !nome.isBlank()
- * &amp;&amp; prezzo != null &amp;&amp; taglia != null
- *
- * <p><strong>Funzione di astrazione:</strong> AF(nome, prezzo, taglia) rappresenta il prodotto con
- * il nome, prezzo e taglia specificati.
+ * <p><strong>AF:</strong> AF(nome, prezzo, taglia) = prodotto con quei valori
  */
 public final class Prodotto implements Comparable<Prodotto> {
 
-  /** Il nome del prodotto. */
   private final String nome;
-
-  /** Il prezzo del prodotto. */
   private final Importo prezzo;
-
-  /** La taglia del prodotto. */
   private final Taglia taglia;
 
   /**
-   * Costruisce un prodotto con i dati specificati.
+   * Crea un prodotto.
    *
-   * @param nome il nome del prodotto, non deve essere null né vuoto
-   * @param prezzo il prezzo del prodotto, non deve essere null
-   * @param taglia la taglia del prodotto, non deve essere null
-   * @throws NullPointerException se uno dei parametri è null
-   * @throws IllegalArgumentException se il nome è vuoto o composto solo da spazi
+   * @param nome nome non vuoto
+   * @param prezzo prezzo
+   * @param taglia taglia
    */
   public Prodotto(String nome, Importo prezzo, Taglia taglia) {
-    if (nome == null) {
-      throw new NullPointerException("Il nome non può essere null");
-    }
-    if (nome.isBlank()) {
-      throw new IllegalArgumentException("Il nome non può essere vuoto");
-    }
-    Objects.requireNonNull(prezzo, "Il prezzo non può essere null");
-    Objects.requireNonNull(taglia, "La taglia non può essere null");
-
+    if (nome == null) throw new NullPointerException("nome null");
+    if (nome.isBlank()) throw new IllegalArgumentException("nome vuoto");
+    Objects.requireNonNull(prezzo, "prezzo null");
+    Objects.requireNonNull(taglia, "taglia null");
     this.nome = nome;
     this.prezzo = prezzo;
     this.taglia = taglia;
   }
 
-  /**
-   * Restituisce il nome del prodotto.
-   *
-   * @return il nome del prodotto
-   */
+  /** Restituisce il nome. */
   public String nome() {
     return nome;
   }
 
-  /**
-   * Restituisce il prezzo del prodotto.
-   *
-   * @return il prezzo del prodotto
-   */
+  /** Restituisce il prezzo. */
   public Importo prezzo() {
     return prezzo;
   }
 
-  /**
-   * Restituisce la taglia del prodotto.
-   *
-   * @return la taglia del prodotto
-   */
+  /** Restituisce la taglia. */
   public Taglia taglia() {
     return taglia;
   }
 
   /**
-   * Crea un prodotto a partire da una stringa nel formato "nome|prezzo|taglia".
+   * Parsing formato "nome|prezzo|taglia".
    *
-   * @param s la stringa da convertire, non deve essere null
-   * @return il prodotto corrispondente
-   * @throws NullPointerException se s è null
-   * @throws IllegalArgumentException se s non è nel formato corretto
+   * @throws IllegalArgumentException se formato non valido
    */
   public static Prodotto parse(String s) {
-    if (s == null) {
-      throw new NullPointerException("La stringa non può essere null");
-    }
-
+    if (s == null) throw new NullPointerException();
     String[] parti = s.split("\\|");
-    if (parti.length != 3) {
-      throw new IllegalArgumentException(
-          "Formato non valido, atteso 'nome|prezzo|taglia': " + s);
-    }
+    if (parti.length != 3)
+      throw new IllegalArgumentException("formato errato: " + s);
 
     String nome = parti[0].trim();
-    if (nome.isEmpty()) {
-      throw new IllegalArgumentException("Il nome non può essere vuoto: " + s);
-    }
+    if (nome.isEmpty()) throw new IllegalArgumentException("nome vuoto");
 
     Importo prezzo;
     try {
       prezzo = Importo.parse(parti[1]);
     } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Prezzo non valido in: " + s, e);
+      throw new IllegalArgumentException("prezzo non valido: " + s, e);
     }
 
     Taglia taglia;
     try {
       taglia = Taglia.parse(parti[2]);
     } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Taglia non valida in: " + s, e);
+      throw new IllegalArgumentException("taglia non valida: " + s, e);
     }
 
     return new Prodotto(nome, prezzo, taglia);
   }
 
-  /**
-   * Confronta questo prodotto con un altro secondo l'ordinamento naturale.
-   *
-   * <p>L'ordinamento è: prima per taglia, poi per nome, infine per prezzo.
-   *
-   * @param altro il prodotto da confrontare, non deve essere null
-   * @return un valore negativo, zero o positivo
-   * @throws NullPointerException se altro è null
-   */
   @Override
   public int compareTo(Prodotto altro) {
-    Objects.requireNonNull(altro, "Il prodotto da confrontare non può essere null");
-
+    Objects.requireNonNull(altro);
     int cmp = this.taglia.compareTo(altro.taglia);
     if (cmp != 0) return cmp;
-
     cmp = this.nome.compareTo(altro.nome);
     if (cmp != 0) return cmp;
-
     return this.prezzo.compareTo(altro.prezzo);
   }
 
@@ -161,9 +112,7 @@ public final class Prodotto implements Comparable<Prodotto> {
   public boolean equals(Object obj) {
     if (this == obj) return true;
     if (!(obj instanceof Prodotto other)) return false;
-    return this.nome.equals(other.nome)
-        && this.prezzo.equals(other.prezzo)
-        && this.taglia.equals(other.taglia);
+    return nome.equals(other.nome) && prezzo.equals(other.prezzo) && taglia.equals(other.taglia);
   }
 
   @Override
@@ -171,13 +120,6 @@ public final class Prodotto implements Comparable<Prodotto> {
     return Objects.hash(nome, prezzo, taglia);
   }
 
-  /**
-   * Restituisce la rappresentazione testuale del prodotto.
-   *
-   * <p>Il formato è: "&lt;nome, prezzo, taglia&gt;"
-   *
-   * @return la rappresentazione testuale
-   */
   @Override
   public String toString() {
     return "<" + nome + ", " + prezzo + ", " + taglia + ">";

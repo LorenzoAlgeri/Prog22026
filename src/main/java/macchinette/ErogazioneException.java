@@ -20,61 +20,45 @@
 package macchinette;
 
 /**
- * Eccezione sollevata quando l'erogazione di un prodotto non può essere eseguita.
+ * Eccezione per erogazione impossibile.
  *
- * <p>I possibili motivi sono:
- *
- * <ul>
- *   <li>{@link Motivo#SLOT}: l'indice del binario non esiste
- *   <li>{@link Motivo#EMPTY}: il binario è vuoto
- *   <li>{@link Motivo#VALUE}: il valore del pagamento è insufficiente
- *   <li>{@link Motivo#CHANGE}: non è possibile calcolare il resto
- * </ul>
+ * <p>Motivi: SLOT (indice inesistente), EMPTY (binario vuoto),
+ * VALUE (pagamento insufficiente), CHANGE (resto non calcolabile).
  */
 public class ErogazioneException extends Exception {
 
   private static final long serialVersionUID = 1L;
 
-  /** I possibili motivi dell'errore. */
+  /** Motivi dell'errore. */
   public enum Motivo {
-    /** L'indice del binario non esiste. */
+    /** Indice binario non valido. */
     SLOT,
-    /** Il binario è vuoto. */
+    /** Binario vuoto. */
     EMPTY,
-    /** Il valore del pagamento è insufficiente. */
+    /** Pagamento insufficiente. */
     VALUE,
-    /** Non è possibile calcolare il resto. */
+    /** Impossibile calcolare il resto. */
     CHANGE
   }
 
-  /** Il motivo dell'errore. */
   private final Motivo motivo;
 
   /**
-   * Costruisce l'eccezione con il motivo specificato.
+   * Crea l'eccezione con il motivo specificato.
    *
-   * @param motivo il motivo dell'errore, non deve essere null
-   * @throws NullPointerException se motivo è null
+   * @param motivo causa dell'errore
    */
   public ErogazioneException(Motivo motivo) {
-    super(
-        switch (motivo) {
-          case SLOT -> "slot";
-          case EMPTY -> "empty";
-          case VALUE -> "value";
-          case CHANGE -> "change";
-        });
-    if (motivo == null) {
-      throw new NullPointerException("Il motivo non può essere null");
-    }
+    super(switch (motivo) {
+      case SLOT -> "slot";
+      case EMPTY -> "empty";
+      case VALUE -> "value";
+      case CHANGE -> "change";
+    });
     this.motivo = motivo;
   }
 
-  /**
-   * Restituisce il motivo dell'errore.
-   *
-   * @return il motivo
-   */
+  /** Restituisce il motivo. */
   public Motivo motivo() {
     return motivo;
   }

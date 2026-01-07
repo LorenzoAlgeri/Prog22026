@@ -20,60 +20,39 @@
 package macchinette;
 
 /**
- * Rappresenta la taglia di un prodotto o di un binario.
+ * Taglia di un prodotto o binario. Ordinamento naturale: S &lt; M &lt; L.
  *
- * <p>Le taglie sono ordinate in modo naturale: S &lt; M &lt; L.
+ * <p><strong>RI:</strong> garantito dall'enum
  *
- * <p><strong>Invariante di rappresentazione:</strong> essendo un enum, l'invariante è
- * garantito dalla definizione stessa dei valori.
- *
- * <p><strong>Funzione di astrazione:</strong> ogni valore dell'enum rappresenta una taglia
- * fisica: S (small/piccola), M (medium/media), L (large/grande).
+ * <p><strong>AF:</strong> S = piccola, M = media, L = grande
  */
 public enum Taglia {
-  /** Taglia piccola. */
   S,
-  /** Taglia media. */
   M,
-  /** Taglia grande. */
   L;
 
   /**
-   * Verifica se questa taglia può contenere un oggetto della taglia specificata.
+   * Verifica se questa taglia può contenere l'altra.
    *
-   * <p>Una taglia può contenere un'altra se è maggiore o uguale nell'ordinamento naturale.
-   *
-   * @param altra la taglia da verificare, non deve essere null
-   * @return true se questa taglia può contenere l'altra
-   * @throws NullPointerException se altra è null
+   * @return true se this &gt;= altra
    */
   public boolean contiene(Taglia altra) {
-    if (altra == null) {
-      throw new NullPointerException("La taglia da confrontare non può essere null");
-    }
+    if (altra == null) throw new NullPointerException();
     return this.ordinal() >= altra.ordinal();
   }
 
   /**
-   * Restituisce la taglia corrispondente alla stringa specificata.
+   * Parsing di una stringa (S, M, L, case-insensitive).
    *
-   * <p>La stringa può contenere spazi iniziali o finali e può essere in qualsiasi case.
-   *
-   * @param s la stringa da convertire, non deve essere null
-   * @return la taglia corrispondente
-   * @throws NullPointerException se s è null
-   * @throws IllegalArgumentException se s non corrisponde a nessuna taglia valida
+   * @throws IllegalArgumentException se non valida
    */
   public static Taglia parse(String s) {
-    if (s == null) {
-      throw new NullPointerException("La stringa non può essere null");
-    }
-    String trimmed = s.trim().toUpperCase();
-    return switch (trimmed) {
+    if (s == null) throw new NullPointerException();
+    return switch (s.trim().toUpperCase()) {
       case "S" -> S;
       case "M" -> M;
       case "L" -> L;
-      default -> throw new IllegalArgumentException("Taglia non valida: " + s);
+      default -> throw new IllegalArgumentException("taglia non valida: " + s);
     };
   }
 }

@@ -22,10 +22,9 @@ package macchinette;
 import java.util.Optional;
 
 /**
- * Interfaccia funzionale per le strategie di calcolo del resto.
+ * Strategia per il calcolo del resto.
  *
- * <p>Una strategia determina come selezionare le monete da un aggregato disponibile per comporre
- * esattamente un certo importo di resto.
+ * <p>Determina come selezionare monete per comporre esattamente un importo.
  */
 @FunctionalInterface
 public interface StrategiaResto {
@@ -33,12 +32,9 @@ public interface StrategiaResto {
   /**
    * Calcola il resto dall'aggregato disponibile.
    *
-   * @param resto l'importo del resto da calcolare, non deve essere null
-   * @param disponibile l'aggregato di monete disponibili, non deve essere null
-   * @return un Optional contenente l'aggregato che compone esattamente il resto, o Optional.empty()
-   *     se questa strategia non riesce a calcolare il resto
-   * @throws NullPointerException se resto o disponibile sono null
-   * @throws IllegalArgumentException se resto rappresenta un valore negativo
+   * @param resto importo da comporre
+   * @param disponibile monete disponibili
+   * @return Optional con le monete per il resto, o empty se impossibile
    */
   Optional<Aggregato> calcola(Importo resto, Aggregato disponibile);
 }

@@ -19,211 +19,156 @@
 
 package macchinette;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
- * Rappresenta un importo monetario non negativo.
+ * Importo monetario non negativo, immutabile.
  *
- * <p>Un importo è composto da unità e centesimi. Questa classe è immutabile e tutte le operazioni
- * aritmetiche restituiscono nuove istanze.
+ * <p><strong>RI:</strong> centesimiTotali &gt;= 0
  *
- * <p><strong>Invariante di rappresentazione:</strong> centesimiTotali &gt;= 0
- *
- * <p><strong>Funzione di astrazione:</strong> AF(centesimiTotali) rappresenta l'importo monetario
- * dove le unità sono centesimiTotali / 100 e i centesimi sono centesimiTotali % 100.
+ * <p><strong>AF:</strong> AF(centesimiTotali) = importo di (centesimiTotali / 100) unità
+ * e (centesimiTotali % 100) centesimi.
  */
 public final class Importo implements Comparable<Importo> {
 
-  /** Importo nullo (zero). */
+  /** Importo zero. */
   public static final Importo ZERO = new Importo(0);
 
-  /** Il valore dell'importo espresso in centesimi. */
   private final int centesimiTotali;
 
   /**
-   * Costruisce un importo a partire da unità e centesimi.
+   * Crea un importo da unità e centesimi.
    *
-   * @param unita il numero di unità, deve essere &gt;= 0
-   * @param centesimi il numero di centesimi, deve essere compreso tra 0 e 99 inclusi
-   * @throws IllegalArgumentException se unita &lt; 0 o centesimi non è in [0, 99]
+   * @param unita numero di unità (&gt;= 0)
+   * @param centesimi centesimi (0-99)
+   * @throws IllegalArgumentException se i parametri non sono validi
    */
   public Importo(int unita, int centesimi) {
-    if (unita < 0) {
-      throw new IllegalArgumentException("Le unità non possono essere negative: " + unita);
-    }
-    if (centesimi < 0 || centesimi > 99) {
-      throw new IllegalArgumentException(
-          "I centesimi devono essere compresi tra 0 e 99: " + centesimi);
-    }
+    if (unita < 0) throw new IllegalArgumentException("unità negative: " + unita);
+    if (centesimi < 0 || centesimi > 99)
+      throw new IllegalArgumentException("centesimi non in [0,99]: " + centesimi);
     this.centesimiTotali = unita * 100 + centesimi;
   }
 
-  /**
-   * Costruisce un importo a partire dal totale in centesimi.
-   *
-   * <p>Costruttore privato per uso interno.
-   *
-   * @param centesimiTotali il valore totale in centesimi
-   */
+  // Costruttore privato per uso interno
   private Importo(int centesimiTotali) {
-    assert centesimiTotali >= 0 : "centesimiTotali deve essere >= 0";
     this.centesimiTotali = centesimiTotali;
   }
 
-  /**
-   * Restituisce il numero di unità di questo importo.
-   *
-   * @return il numero di unità (&gt;= 0)
-   */
+  /** Restituisce le unità. */
   public int unita() {
     return centesimiTotali / 100;
   }
 
-  /**
-   * Restituisce il numero di centesimi di questo importo (parte frazionaria).
-   *
-   * @return il numero di centesimi (0-99)
-   */
+  /** Restituisce i centesimi (0-99). */
   public int centesimi() {
     return centesimiTotali % 100;
   }
 
-  /**
-   * Restituisce il valore totale in centesimi.
-   *
-   * @return il valore in centesimi
-   */
+  /** Restituisce il valore totale in centesimi. */
   public int inCentesimi() {
     return centesimiTotali;
   }
 
   /**
-   * Restituisce un nuovo importo pari alla somma di questo e dell'altro.
+   * Somma questo importo con un altro.
    *
-   * @param altro l'importo da sommare, non deve essere null
-   * @return un nuovo importo pari alla somma
-   * @throws NullPointerException se altro è null
+   * @param altro importo da sommare
+   * @return nuovo importo
    */
   public Importo somma(Importo altro) {
-    Objects.requireNonNull(altro, "L'importo da sommare non può essere null");
+    Objects.requireNonNull(altro);
     return new Importo(this.centesimiTotali + altro.centesimiTotali);
   }
 
   /**
-   * Restituisce un nuovo importo pari alla differenza tra questo e l'altro.
+   * Sottrae un importo da questo.
    *
-   * @param altro l'importo da sottrarre, non deve essere null
-   * @return un nuovo importo pari alla differenza
-   * @throws NullPointerException se altro è null
+   * @param altro importo da sottrarre
+   * @return nuovo importo
    * @throws IllegalArgumentException se il risultato sarebbe negativo
    */
   public Importo sottrai(Importo altro) {
-    Objects.requireNonNull(altro, "L'importo da sottrarre non può essere null");
-    if (this.centesimiTotali < altro.centesimiTotali) {
-      throw new IllegalArgumentException(
-          "La sottrazione produrrebbe un importo negativo: " + this + " - " + altro);
-    }
+    Objects.requireNonNull(altro, "altro non può essere null");
+    if (this.centesimiTotali < altro.centesimiTotali)
+      throw new IllegalArgumentException("risultato negativo");
     return new Importo(this.centesimiTotali - altro.centesimiTotali);
   }
 
   /**
-   * Restituisce un nuovo importo pari a questo moltiplicato per un intero.
+   * Moltiplica questo importo per un intero.
    *
-   * @param n il moltiplicatore, deve essere &gt;= 0
-   * @return un nuovo importo pari al prodotto
-   * @throws IllegalArgumentException se n &lt; 0
+   * @param n moltiplicatore (&gt;= 0)
+   * @return nuovo importo
    */
   public Importo moltiplica(int n) {
-    if (n < 0) {
-      throw new IllegalArgumentException("Il moltiplicatore non può essere negativo: " + n);
-    }
+    if (n < 0) throw new IllegalArgumentException("moltiplicatore negativo");
     return new Importo(this.centesimiTotali * n);
   }
 
   /**
-   * Restituisce il quoziente intero della divisione di questo importo per l'altro.
+   * Divisione intera tra importi.
    *
-   * <p>Il risultato è il più grande intero n tale che altro.moltiplica(n) &lt;= this.
-   *
-   * @param divisore l'importo divisore, non deve essere null né zero
-   * @return il quoziente intero
-   * @throws NullPointerException se divisore è null
-   * @throws IllegalArgumentException se divisore è zero
+   * @param divisore importo divisore (non zero)
+   * @return quoziente intero
    */
   public int dividi(Importo divisore) {
-    Objects.requireNonNull(divisore, "Il divisore non può essere null");
-    if (divisore.centesimiTotali == 0) {
-      throw new IllegalArgumentException("Divisione per zero");
-    }
+    Objects.requireNonNull(divisore);
+    if (divisore.centesimiTotali == 0) throw new IllegalArgumentException("divisione per zero");
     return this.centesimiTotali / divisore.centesimiTotali;
   }
 
-  /**
-   * Verifica se questo importo è maggiore dell'altro.
-   *
-   * @param altro l'importo da confrontare, non deve essere null
-   * @return true se questo importo è strettamente maggiore
-   * @throws NullPointerException se altro è null
-   */
+  /** Verifica se questo importo è maggiore dell'altro. */
   public boolean maggioreDi(Importo altro) {
-    Objects.requireNonNull(altro, "L'importo da confrontare non può essere null");
+    Objects.requireNonNull(altro);
     return this.centesimiTotali > altro.centesimiTotali;
   }
 
-  /**
-   * Verifica se questo importo è minore dell'altro.
-   *
-   * @param altro l'importo da confrontare, non deve essere null
-   * @return true se questo importo è strettamente minore
-   * @throws NullPointerException se altro è null
-   */
+  /** Verifica se questo importo è minore dell'altro. */
   public boolean minoreDi(Importo altro) {
-    Objects.requireNonNull(altro, "L'importo da confrontare non può essere null");
+    Objects.requireNonNull(altro);
     return this.centesimiTotali < altro.centesimiTotali;
   }
 
   /**
-   * Crea un importo a partire da una stringa nel formato decimale.
+   * Parsing di una stringa decimale (es. ".50", "2.30", "1").
    *
-   * <p>Formati accettati: ".50", "1", "2.30", "0.05", ecc.
-   *
-   * @param s la stringa da convertire, non deve essere null
-   * @return l'importo corrispondente
-   * @throws NullPointerException se s è null
-   * @throws IllegalArgumentException se s non è nel formato corretto o rappresenta un valore
-   *     negativo
+   * @param s stringa da convertire
+   * @return importo corrispondente
+   * @throws IllegalArgumentException se formato non valido o valore negativo
    */
   public static Importo parse(String s) {
-    if (s == null) {
-      throw new NullPointerException("La stringa non può essere null");
-    }
-    String trimmed = s.trim();
-    if (trimmed.isEmpty()) {
-      throw new IllegalArgumentException("La stringa non può essere vuota");
-    }
+    if (s == null) throw new NullPointerException("stringa null");
+    String str = s.trim();
+    if (str.isEmpty()) throw new IllegalArgumentException("stringa vuota");
 
-    int centesimiTotali;
+    int cents;
     try {
-      BigDecimal bd = new BigDecimal(trimmed);
-      centesimiTotali = bd.multiply(BigDecimal.valueOf(100)).intValueExact();
+      if (str.contains(".")) {
+        String[] parts = str.split("\\.");
+        int unita = parts[0].isEmpty() ? 0 : Integer.parseInt(parts[0]);
+        String centPart = parts.length > 1 ? parts[1] : "0";
+        // Max 2 decimali
+        if (centPart.length() > 2)
+          throw new IllegalArgumentException("troppi decimali: " + s);
+        // Padding: ".5" -> 50 cents, ".05" -> 5 cents
+        if (centPart.length() == 1) centPart = centPart + "0";
+        int centesimi = Integer.parseInt(centPart);
+        cents = unita * 100 + centesimi;
+      } else {
+        cents = Integer.parseInt(str) * 100;
+      }
     } catch (NumberFormatException e) {
-      throw new IllegalArgumentException("Formato non valido: " + s, e);
-    } catch (ArithmeticException e) {
-      throw new IllegalArgumentException(
-          "Il valore ha troppi decimali o è fuori range: " + s, e);
+      throw new IllegalArgumentException("formato non valido: " + s, e);
     }
 
-    if (centesimiTotali < 0) {
-      throw new IllegalArgumentException("L'importo non può essere negativo: " + s);
-    }
-
-    return new Importo(centesimiTotali);
+    if (cents < 0) throw new IllegalArgumentException("importo negativo: " + s);
+    return new Importo(cents);
   }
 
   @Override
   public int compareTo(Importo altro) {
-    Objects.requireNonNull(altro, "L'importo da confrontare non può essere null");
+    Objects.requireNonNull(altro);
     return Integer.compare(this.centesimiTotali, altro.centesimiTotali);
   }
 
@@ -239,38 +184,19 @@ public final class Importo implements Comparable<Importo> {
     return Integer.hashCode(centesimiTotali);
   }
 
-  /**
-   * Restituisce la rappresentazione testuale dell'importo.
-   *
-   * <p>Il formato è: "[u unit[s]] [c cent[s]]" dove le parti tra parentesi quadre sono opzionali a
-   * seconda dei valori.
-   *
-   * <p>Esempi: "1 unit", "5 cents", "2 units 30 cents", "1 unit 1 cent"
-   *
-   * @return la rappresentazione testuale
-   */
   @Override
   public String toString() {
     int u = unita();
     int c = centesimi();
 
-    if (u == 0 && c == 0) {
-      return "0 cents";
-    }
+    if (u == 0 && c == 0) return "0 cents";
 
     StringBuilder sb = new StringBuilder();
-
-    if (u > 0) {
-      sb.append(u).append(u == 1 ? " unit" : " units");
-    }
-
+    if (u > 0) sb.append(u).append(u == 1 ? " unit" : " units");
     if (c > 0) {
-      if (u > 0) {
-        sb.append(" ");
-      }
+      if (u > 0) sb.append(" ");
       sb.append(c).append(c == 1 ? " cent" : " cents");
     }
-
     return sb.toString();
   }
 }

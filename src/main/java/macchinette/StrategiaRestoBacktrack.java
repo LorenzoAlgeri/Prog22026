@@ -23,95 +23,55 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Strategia di calcolo del resto con backtracking.
+ * Strategia con backtracking: esplora tutte le combinazioni.
  *
- * <p>Questa strategia esplora tutte le possibili combinazioni di monete per trovare una soluzione.
- * Garantisce di trovare una soluzione se esiste, a differenza delle strategie greedy.
- *
- * <p>Parte dalle monete di valore maggiore per efficienza, ma esplora tutte le alternative se
- * necessario.
+ * <p>Garantisce di trovare soluzione se esiste, a differenza delle greedy.
  */
 public class StrategiaRestoBacktrack implements StrategiaResto {
 
-  /** Istanza singleton della strategia. */
   public static final StrategiaRestoBacktrack INSTANCE = new StrategiaRestoBacktrack();
 
-  /** Costruttore privato per il pattern singleton. */
   private StrategiaRestoBacktrack() {}
 
   @Override
   public Optional<Aggregato> calcola(Importo resto, Aggregato disponibile) {
-    Objects.requireNonNull(resto, "L'importo del resto non può essere null");
-    Objects.requireNonNull(disponibile, "L'aggregato disponibile non può essere null");
+    Objects.requireNonNull(resto);
+    Objects.requireNonNull(disponibile);
 
-    if (resto.equals(Importo.ZERO)) {
-      return Optional.of(new Aggregato());
-    }
+    if (resto.equals(Importo.ZERO)) return Optional.of(new Aggregato());
+    if (disponibile.valoreTotale().minoreDi(resto)) return Optional.empty();
 
-    // Verifica se il valore totale è sufficiente
-    if (disponibile.valoreTotale().minoreDi(resto)) {
-      return Optional.empty();
-    }
-
-    // Prepara gli array per il backtracking
     Moneta[] monete = Moneta.values();
-    int[] disponibili = new int[monete.length];
+    int[] disp = new int[monete.length];
     int[] usate = new int[monete.length];
 
     for (int i = 0; i < monete.length; i++) {
-      disponibili[i] = disponibile.quantita(monete[i]);
+      disp[i] = disponibile.quantita(monete[i]);
     }
 
-    // Esegue il backtracking partendo dall'ultima moneta (valore maggiore)
-    if (backtrack(monete, disponibili, usate, monete.length - 1, resto.inCentesimi())) {
-      Aggregato risultato = new Aggregato();
+    if (backtrack(monete, disp, usate, monete.length - 1, resto.inCentesimi())) {
+      Aggregato result = new Aggregato();
       for (int i = 0; i < monete.length; i++) {
-        if (usate[i] > 0) {
-          risultato.aggiungi(monete[i], usate[i]);
-        }
+        if (usate[i] > 0) result.aggiungi(monete[i], usate[i]);
       }
-      return Optional.of(risultato);
+      return Optional.of(result);
     }
-
     return Optional.empty();
   }
 
-  /**
-   * Esegue il backtracking ricorsivo.
-   *
-   * @param monete l'array delle monete
-   * @param disponibili le quantità disponibili per ogni moneta
-   * @param usate le quantità usate per ogni moneta (output)
-   * @param indice l'indice corrente della moneta da considerare
-   * @param rimanente l'importo rimanente da coprire in centesimi
-   * @return true se è stata trovata una soluzione
-   */
-  private boolean backtrack(
-      Moneta[] monete, int[] disponibili, int[] usate, int indice, int rimanente) {
-    // Caso base: abbiamo raggiunto l'importo esatto
-    if (rimanente == 0) {
-      return true;
+  // Backtracking ricorsivo
+  private boolean backtrack(Moneta[] monete, int[] disp, int[] usate, int idx, int rimanente) {
+    if (rimanente == 0) return true;
+    if (idx < 0) return false;
+
+    int valore = monete[idx].valore().inCentesimi();
+    int maxQ = Math.min(disp[idx], rimanente / valore);
+
+    for (int q = maxQ; q >= 0; q--) {
+      usate[idx] = q;
+      if (backtrack(monete, disp, usate, idx - 1, rimanente - q * valore)) return true;
     }
-
-    // Caso base: abbiamo esaurito le monete
-    if (indice < 0) {
-      return false;
-    }
-
-    int valoreMoneta = monete[indice].valore().inCentesimi();
-    int maxUsabili = Math.min(disponibili[indice], rimanente / valoreMoneta);
-
-    // Prova a usare da maxUsabili a 0 monete di questo tipo
-    for (int q = maxUsabili; q >= 0; q--) {
-      usate[indice] = q;
-      int nuovoRimanente = rimanente - q * valoreMoneta;
-
-      if (backtrack(monete, disponibili, usate, indice - 1, nuovoRimanente)) {
-        return true;
-      }
-    }
-
-    usate[indice] = 0;
+    usate[idx] = 0;
     return false;
   }
 

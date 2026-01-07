@@ -20,61 +20,45 @@
 package macchinette;
 
 /**
- * Eccezione sollevata quando un'operazione su un binario non può essere eseguita.
+ * Eccezione per operazioni non valide su un binario.
  *
- * <p>I possibili motivi sono:
- *
- * <ul>
- *   <li>{@link Motivo#SIZE}: la taglia del prodotto eccede quella del binario
- *   <li>{@link Motivo#CAPACITY}: la quantità eccede la capacità del binario
- *   <li>{@link Motivo#ITEM}: il prodotto è diverso da quello già contenuto nel binario
- *   <li>{@link Motivo#EMPTY}: il binario è vuoto (per operazioni che richiedono contenuto)
- * </ul>
+ * <p>Motivi: SIZE (taglia eccessiva), CAPACITY (capacità superata),
+ * ITEM (prodotto diverso), EMPTY (binario vuoto).
  */
 public class BinarioException extends Exception {
 
   private static final long serialVersionUID = 1L;
 
-  /** I possibili motivi dell'errore. */
+  /** Motivi dell'errore. */
   public enum Motivo {
-    /** La taglia del prodotto eccede quella del binario. */
+    /** Taglia prodotto eccede quella del binario. */
     SIZE,
-    /** La quantità eccede la capacità del binario. */
+    /** Quantità eccede la capacità. */
     CAPACITY,
-    /** Il prodotto è diverso da quello già contenuto. */
+    /** Prodotto diverso da quello contenuto. */
     ITEM,
-    /** Il binario è vuoto. */
+    /** Binario vuoto. */
     EMPTY
   }
 
-  /** Il motivo dell'errore. */
   private final Motivo motivo;
 
   /**
-   * Costruisce l'eccezione con il motivo specificato.
+   * Crea l'eccezione con il motivo specificato.
    *
-   * @param motivo il motivo dell'errore, non deve essere null
-   * @throws NullPointerException se motivo è null
+   * @param motivo causa dell'errore
    */
   public BinarioException(Motivo motivo) {
-    super(
-        switch (motivo) {
-          case SIZE -> "size";
-          case CAPACITY -> "capacity";
-          case ITEM -> "item";
-          case EMPTY -> "empty";
-        });
-    if (motivo == null) {
-      throw new NullPointerException("Il motivo non può essere null");
-    }
+    super(switch (motivo) {
+      case SIZE -> "size";
+      case CAPACITY -> "capacity";
+      case ITEM -> "item";
+      case EMPTY -> "empty";
+    });
     this.motivo = motivo;
   }
 
-  /**
-   * Restituisce il motivo dell'errore.
-   *
-   * @return il motivo
-   */
+  /** Restituisce il motivo. */
   public Motivo motivo() {
     return motivo;
   }

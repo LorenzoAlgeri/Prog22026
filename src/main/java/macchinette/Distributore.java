@@ -19,6 +19,7 @@
 
 package macchinette;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,106 +28,67 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Rappresenta un distributore automatico di prodotti.
+ * Distributore automatico con binari, fondo cassa e strategia resto.
  *
- * <p>Un distributore è composto da un elenco di binari, un fondo cassa e una strategia per il
- * calcolo del resto.
- *
- * <p><strong>Invariante di rappresentazione:</strong> binari != null &amp;&amp; !binari.isEmpty()
- * &amp;&amp; tutti gli elementi di binari sono != null &amp;&amp; fondoCassa != null &amp;&amp;
+ * <p><strong>RI:</strong> binari != null, non vuoto, elementi != null, fondoCassa != null,
  * strategia != null
  *
- * <p><strong>Funzione di astrazione:</strong> AF(binari, fondoCassa, strategia) rappresenta un
- * distributore con i binari indicizzati da 0 a binari.size()-1, il fondo cassa e la strategia di
- * resto specificati.
+ * <p><strong>AF:</strong> AF(binari, fondoCassa, strategia) = distributore con binari [0..n-1],
+ * quel fondo cassa e quella strategia
  */
 public class Distributore {
 
-  /** L'elenco dei binari. */
   private final List<Binario> binari;
-
-  /** Il fondo cassa. */
   private final Aggregato fondoCassa;
-
-  /** La strategia per il calcolo del resto. */
   private final StrategiaResto strategia;
 
   /**
-   * Costruisce un distributore con i binari, il fondo cassa e la strategia specificati.
+   * Crea un distributore.
    *
-   * @param binari l'elenco dei binari, non deve essere null né vuoto
-   * @param fondoCassa il fondo cassa iniziale, non deve essere null
-   * @param strategia la strategia di calcolo del resto, non deve essere null
-   * @throws NullPointerException se uno dei parametri è null
-   * @throws IllegalArgumentException se binari è vuoto
+   * @param binari lista binari (non vuota)
+   * @param fondoCassa fondo cassa iniziale
+   * @param strategia strategia per il resto
    */
   public Distributore(List<Binario> binari, Aggregato fondoCassa, StrategiaResto strategia) {
-    Objects.requireNonNull(binari, "L'elenco dei binari non può essere null");
-    Objects.requireNonNull(fondoCassa, "Il fondo cassa non può essere null");
-    Objects.requireNonNull(strategia, "La strategia non può essere null");
+    Objects.requireNonNull(binari);
+    Objects.requireNonNull(fondoCassa);
+    Objects.requireNonNull(strategia);
+    if (binari.isEmpty()) throw new IllegalArgumentException("binari vuoti");
+    for (int i = 0; i < binari.size(); i++)
+      if (binari.get(i) == null) throw new NullPointerException("binario " + i + " null");
 
-    if (binari.isEmpty()) {
-      throw new IllegalArgumentException("L'elenco dei binari non può essere vuoto");
-    }
-
-    for (int i = 0; i < binari.size(); i++) {
-      if (binari.get(i) == null) {
-        throw new NullPointerException("Il binario all'indice " + i + " è null");
-      }
-    }
-
-    // Copia difensiva
     this.binari = new ArrayList<>(binari);
     this.fondoCassa = new Aggregato(fondoCassa);
     this.strategia = strategia;
   }
 
-  /**
-   * Restituisce il numero di binari del distributore.
-   *
-   * @return il numero di binari
-   */
+  /** Numero di binari. */
   public int numeroBinari() {
     return binari.size();
   }
 
-  /**
-   * Restituisce il valore totale del fondo cassa.
-   *
-   * @return l'importo totale nel fondo cassa
-   */
+  /** Valore totale del fondo cassa. */
   public Importo valoreFondoCassa() {
     return fondoCassa.valoreTotale();
   }
 
-  /**
-   * Aggiunge monete al fondo cassa.
-   *
-   * @param monete l'aggregato di monete da aggiungere, non deve essere null
-   * @throws NullPointerException se monete è null
-   */
+  /** Aggiunge monete al fondo cassa. */
   public void aggiungiAlFondoCassa(Aggregato monete) {
-    Objects.requireNonNull(monete, "L'aggregato di monete non può essere null");
+    Objects.requireNonNull(monete);
     fondoCassa.aggiungi(monete);
   }
 
-  /**
-   * Svuota il fondo cassa e restituisce le monete.
-   *
-   * @return un aggregato contenente tutte le monete del fondo cassa
-   */
+  /** Svuota il fondo cassa e restituisce le monete. */
   public Aggregato svuotaFondoCassa() {
     Aggregato copia = new Aggregato(fondoCassa);
-    // Svuota rimuovendo tutto
     for (Moneta m : Moneta.values()) {
       int q = fondoCassa.quantita(m);
       if (q > 0) {
-        Aggregato daRimuovere = new Aggregato();
-        daRimuovere.aggiungi(m, q);
+        Aggregato temp = new Aggregato();
+        temp.aggiungi(m, q);
         try {
-          fondoCassa.rimuovi(daRimuovere);
+          fondoCassa.rimuovi(temp);
         } catch (AggregatoInsufficienteException e) {
-          // Non dovrebbe mai accadere
           throw new AssertionError(e);
         }
       }
@@ -135,171 +97,101 @@ public class Distributore {
   }
 
   /**
-   * Carica una quantità di prodotti nel distributore.
+   * Carica prodotti nei binari (in ordine).
    *
-   * <p>I prodotti vengono caricati nei binari in ordine di indice, riempiendo ogni binario il più
-   * possibile prima di passare al successivo.
-   *
-   * @param prodotto il prodotto da caricare, non deve essere null
-   * @param quantita la quantità da caricare, deve essere &gt; 0
-   * @return il numero di prodotti non caricati per mancanza di spazio
-   * @throws NullPointerException se prodotto è null
-   * @throws IllegalArgumentException se quantita &lt;= 0
+   * @return numero di prodotti non caricati
    */
   public int carica(Prodotto prodotto, int quantita) {
-    Objects.requireNonNull(prodotto, "Il prodotto non può essere null");
-    if (quantita <= 0) {
-      throw new IllegalArgumentException("La quantità deve essere positiva: " + quantita);
-    }
+    Objects.requireNonNull(prodotto);
+    if (quantita <= 0) throw new IllegalArgumentException("quantità non positiva");
 
     int rimanenti = quantita;
-
-    for (Binario binario : binari) {
+    for (Binario bin : binari) {
       if (rimanenti <= 0) break;
+      if (!bin.accetta(prodotto)) continue;
 
-      // Verifica se il binario può accettare questo prodotto
-      if (!binario.accetta(prodotto)) {
-        continue;
-      }
-
-      // Quanti ne possiamo caricare in questo binario?
-      int spazio = binario.spazioDisponibile();
-      if (spazio <= 0) {
-        continue;
-      }
+      int spazio = bin.spazioDisponibile();
+      if (spazio <= 0) continue;
 
       int daCaricare = Math.min(rimanenti, spazio);
-
       try {
-        binario.carica(prodotto, daCaricare);
+        bin.carica(prodotto, daCaricare);
         rimanenti -= daCaricare;
       } catch (BinarioException e) {
-        // Non dovrebbe accadere dato che abbiamo già verificato
-        continue;
+        // già verificato, continua
       }
     }
-
     return rimanenti;
   }
 
   /**
    * Eroga un prodotto dal binario specificato.
    *
-   * @param indiceBinario l'indice del binario
-   * @param pagamento l'aggregato di monete usato per il pagamento, non deve essere null
-   * @return l'aggregato del resto
-   * @throws NullPointerException se pagamento è null
-   * @throws ErogazioneException se l'erogazione non è possibile
+   * @return aggregato del resto
+   * @throws ErogazioneException se impossibile (SLOT, EMPTY, VALUE, CHANGE)
    */
   public Aggregato eroga(int indiceBinario, Aggregato pagamento) throws ErogazioneException {
-    Objects.requireNonNull(pagamento, "Il pagamento non può essere null");
+    Objects.requireNonNull(pagamento);
 
-    // Verifica indice
-    if (indiceBinario < 0 || indiceBinario >= binari.size()) {
+    if (indiceBinario < 0 || indiceBinario >= binari.size())
       throw new ErogazioneException(ErogazioneException.Motivo.SLOT);
-    }
 
-    Binario binario = binari.get(indiceBinario);
-
-    // Verifica se vuoto
-    if (binario.vuoto()) {
+    Binario bin = binari.get(indiceBinario);
+    if (bin.vuoto())
       throw new ErogazioneException(ErogazioneException.Motivo.EMPTY);
-    }
 
-    Prodotto prodotto = binario.prodotto();
-    Importo prezzo = prodotto.prezzo();
+    Importo prezzo = bin.prodotto().prezzo();
     Importo pagato = pagamento.valoreTotale();
 
-    // Verifica pagamento sufficiente
-    if (pagato.minoreDi(prezzo)) {
+    if (pagato.minoreDi(prezzo))
       throw new ErogazioneException(ErogazioneException.Motivo.VALUE);
-    }
 
-    // Calcola il resto
     Importo importoResto = pagato.sottrai(prezzo);
 
-    // Se il resto è zero, nessun problema
     Aggregato resto;
     if (importoResto.equals(Importo.ZERO)) {
       resto = new Aggregato();
     } else {
-      // Unisce il pagamento al fondo cassa temporaneamente per calcolare il resto
       Aggregato disponibile = new Aggregato(fondoCassa);
       disponibile.aggiungi(pagamento);
 
       Optional<Aggregato> restoOpt = strategia.calcola(importoResto, disponibile);
-      if (restoOpt.isEmpty()) {
+      if (restoOpt.isEmpty())
         throw new ErogazioneException(ErogazioneException.Motivo.CHANGE);
-      }
       resto = restoOpt.get();
     }
 
-    // A questo punto l'erogazione può procedere
-    // 1. Aggiungi il pagamento al fondo cassa
+    // Esegue transazione
     fondoCassa.aggiungi(pagamento);
-
-    // 2. Rimuovi il resto dal fondo cassa
     if (!resto.vuoto()) {
       try {
         fondoCassa.rimuovi(resto);
       } catch (AggregatoInsufficienteException e) {
-        // Non dovrebbe accadere perché abbiamo già verificato
         throw new AssertionError(e);
       }
     }
-
-    // 3. Dispensa il prodotto
     try {
-      binario.dispensa();
+      bin.dispensa();
     } catch (BinarioException e) {
-      // Non dovrebbe accadere perché abbiamo già verificato
       throw new AssertionError(e);
     }
 
     return resto;
   }
 
-  /**
-   * Restituisce un iteratore sui binari non vuoti con il loro indice.
-   *
-   * <p>Ogni elemento è una coppia (indice, binario).
-   *
-   * @return un iteratore sulle entry (indice, binario) per i binari non vuoti
-   */
+  /** Iteratore sui binari non vuoti con il loro indice. */
   public Iterator<Map.Entry<Integer, Binario>> binariNonVuoti() {
-    List<Map.Entry<Integer, Binario>> nonVuoti = new ArrayList<>();
+    List<Map.Entry<Integer, Binario>> result = new ArrayList<>();
     for (int i = 0; i < binari.size(); i++) {
       if (!binari.get(i).vuoto()) {
-        final int indice = i;
-        final Binario b = binari.get(i);
-        nonVuoti.add(
-            new Map.Entry<Integer, Binario>() {
-              @Override
-              public Integer getKey() {
-                return indice;
-              }
-
-              @Override
-              public Binario getValue() {
-                return b;
-              }
-
-              @Override
-              public Binario setValue(Binario value) {
-                throw new UnsupportedOperationException();
-              }
-            });
+        result.add(new AbstractMap.SimpleImmutableEntry<>(i, binari.get(i)));
       }
     }
-    return nonVuoti.iterator();
+    return result.iterator();
   }
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Distributore[binari=").append(binari.size());
-    sb.append(", fondoCassa=").append(fondoCassa.valoreTotale());
-    sb.append("]");
-    return sb.toString();
+    return "Distributore[binari=" + binari.size() + ", fondoCassa=" + fondoCassa.valoreTotale() + "]";
   }
 }
