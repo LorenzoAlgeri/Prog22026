@@ -33,6 +33,8 @@ package macchinette;
  */
 public class BinarioException extends Exception {
 
+  private static final long serialVersionUID = 1L;
+
   /** I possibili motivi dell'errore. */
   public enum Motivo {
     /** La taglia del prodotto eccede quella del binario. */

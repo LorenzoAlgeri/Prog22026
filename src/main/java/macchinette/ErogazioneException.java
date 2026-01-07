@@ -33,6 +33,8 @@ package macchinette;
  */
 public class ErogazioneException extends Exception {
 
+  private static final long serialVersionUID = 1L;
+
   /** I possibili motivi dell'errore. */
   public enum Motivo {
     /** L'indice del binario non esiste. */

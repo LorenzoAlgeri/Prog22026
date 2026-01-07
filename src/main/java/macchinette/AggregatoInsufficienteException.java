@@ -31,6 +31,8 @@ package macchinette;
  */
 public class AggregatoInsufficienteException extends Exception {
 
+  private static final long serialVersionUID = 1L;
+
   /** I possibili motivi dell'insufficienza. */
   public enum Motivo {
     /** Il valore totale è insufficiente. */
