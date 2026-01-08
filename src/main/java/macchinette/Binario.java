@@ -54,20 +54,7 @@ public class Binario {
     this.capacita = capacita;
   }
 
-  /** Restituisce la taglia. */
-  public Taglia taglia() {
-    return taglia;
-  }
 
-  /** Restituisce la capacità. */
-  public int capacita() {
-    return capacita;
-  }
-
-  /** Restituisce la quantità attuale. */
-  public int quantita() {
-    return quantita;
-  }
 
   /** Verifica se vuoto. */
   public boolean vuoto() {

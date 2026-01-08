@@ -102,17 +102,8 @@ public class Aggregato implements Iterable<Map.Entry<Moneta, Integer>> {
     }
   }
 
-  /** Verifica se questo aggregato contiene almeno le monete dell'altro. */
-  public boolean contiene(Aggregato altro) {
-    Objects.requireNonNull(altro);
-    for (Map.Entry<Moneta, Integer> e : altro.monete.entrySet()) {
-      if (this.quantita(e.getKey()) < e.getValue()) return false;
-    }
-    return true;
-  }
-
   /** Rimuove tutte le monete dall'aggregato. */
-  public void clear() {
+  void clear() {
     monete.clear();
   }
 

@@ -66,7 +66,7 @@ public final class Prodotto implements Comparable<Prodotto> {
   }
 
   /** Restituisce la taglia. */
-  public Taglia taglia() {
+  Taglia taglia() {
     return taglia;
   }
 

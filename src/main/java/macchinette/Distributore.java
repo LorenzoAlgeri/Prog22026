@@ -68,28 +68,7 @@ public class Distributore {
     this.strategia = strategia;
   }
 
-  /** Numero di binari. */
-  public int numeroBinari() {
-    return binari.size();
-  }
 
-  /** Valore totale del fondo cassa. */
-  public Importo valoreFondoCassa() {
-    return fondoCassa.valoreTotale();
-  }
-
-  /** Aggiunge monete al fondo cassa. */
-  public void aggiungiAlFondoCassa(Aggregato monete) {
-    Objects.requireNonNull(monete);
-    fondoCassa.aggiungi(monete);
-  }
-
-  /** Svuota il fondo cassa e restituisce le monete. */
-  public Aggregato svuotaFondoCassa() {
-    Aggregato copia = new Aggregato(fondoCassa);
-    fondoCassa.clear();
-    return copia;
-  }
 
   /**
    * Carica prodotti nei binari (in ordine).

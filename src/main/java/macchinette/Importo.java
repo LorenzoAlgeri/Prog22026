@@ -57,15 +57,15 @@ public final class Importo implements Comparable<Importo> {
     this.centesimiTotali = centesimiTotali;
   }
 
-  public int unita() {
+  int unita() {
     return centesimiTotali / 100;
   }
 
-  public int centesimi() {
+  int centesimi() {
     return centesimiTotali % 100;
   }
 
-  public int inCentesimi() {
+  int inCentesimi() {
     return centesimiTotali;
   }
 
@@ -115,11 +115,6 @@ public final class Importo implements Comparable<Importo> {
     Objects.requireNonNull(divisore);
     if (divisore.centesimiTotali == 0) throw new IllegalArgumentException("divisione per zero");
     return this.centesimiTotali / divisore.centesimiTotali;
-  }
-
-  public boolean maggioreDi(Importo altro) {
-    Objects.requireNonNull(altro);
-    return this.centesimiTotali > altro.centesimiTotali;
   }
 
   public boolean minoreDi(Importo altro) {
