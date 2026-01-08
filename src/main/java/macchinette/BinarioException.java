@@ -22,6 +22,15 @@ package macchinette;
 /**
  * Eccezione per operazioni non valide su un binario.
  *
+ * <p><strong>RI:</strong> motivo non è null.
+ *
+ * <p><strong>AF:</strong> rappresenta una condizione di errore verificatasi durante
+ * un'operazione su un binario, con il motivo specifico indicato dal campo motivo;
+ * i motivi possibili sono SIZE (la taglia del prodotto eccede quella del binario),
+ * CAPACITY (la quantità da caricare supererebbe la capacità del binario),
+ * ITEM (si tenta di caricare un prodotto diverso da quello già presente),
+ * EMPTY (si tenta di dispensare da un binario vuoto).
+ *
  * <p>Motivi: SIZE (taglia eccessiva), CAPACITY (capacità superata),
  * ITEM (prodotto diverso), EMPTY (binario vuoto).
  */

@@ -24,11 +24,15 @@ import java.util.Objects;
 /**
  * Slot di un distributore con taglia e capacità fisse.
  *
- * <p><strong>RI:</strong> taglia != null, capacita &gt; 0, 0 &lt;= quantita &lt;= capacita,
- * (prodotto == null) == (quantita == 0), prodotto != null =&gt; taglia.contiene(prodotto.taglia())
+ * <p><strong>RI:</strong> taglia non è null;
+ * capacita è strettamente positivo;
+ * quantita è compreso tra 0 e capacita (inclusi);
+ * se prodotto è null allora quantita deve essere 0, e viceversa se quantita è 0 allora prodotto deve essere null;
+ * se prodotto non è null allora la taglia del prodotto deve essere contenibile nella taglia del binario.
  *
- * <p><strong>AF:</strong> AF(taglia, capacita, prodotto, quantita) = binario di quella taglia e
- * capacità contenente 'quantita' unità del prodotto
+ * <p><strong>AF:</strong> rappresenta un binario di un distributore automatico che può contenere
+ * prodotti di una certa taglia fino a una capacità massima specificata; se il binario non è vuoto,
+ * contiene quantita unità del prodotto indicato.
  */
 public class Binario {
 

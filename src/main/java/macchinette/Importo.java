@@ -25,10 +25,11 @@ import java.util.Objects;
 /**
  * Importo monetario non negativo, immutabile.
  *
- * <p><strong>RI:</strong> centesimiTotali &gt;= 0
+ * <p><strong>RI:</strong> centesimiTotali è maggiore o uguale a zero.
  *
- * <p><strong>AF:</strong> AF(centesimiTotali) = importo di (centesimiTotali / 100) unità
- * e (centesimiTotali % 100) centesimi.
+ * <p><strong>AF:</strong> rappresenta l'importo monetario pari a centesimiTotali/100 unità intere
+ * e centesimiTotali%100 centesimi; ad esempio se centesimiTotali vale 230,
+ * l'importo rappresentato è 2 unità e 30 centesimi.
  */
 public final class Importo implements Comparable<Importo> {
 

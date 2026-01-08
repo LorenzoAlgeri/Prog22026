@@ -28,11 +28,14 @@ import java.util.Optional;
 /**
  * Distributore automatico con binari, fondo cassa e strategia resto.
  *
- * <p><strong>RI:</strong> binari != null, non vuoto, elementi != null, fondoCassa != null,
- * strategia != null
+ * <p><strong>RI:</strong> binari non è null e non è vuoto;
+ * ogni elemento di binari non è null;
+ * fondoCassa non è null;
+ * strategia non è null.
  *
- * <p><strong>AF:</strong> AF(binari, fondoCassa, strategia) = distributore con binari [0..n-1],
- * quel fondo cassa e quella strategia
+ * <p><strong>AF:</strong> rappresenta un distributore automatico i cui binari sono indicizzati
+ * da 0 a binari.size()-1, con il fondo cassa dato dall'aggregato fondoCassa
+ * e che utilizza la strategia indicata per calcolare i resti.
  */
 public class Distributore {
 
@@ -42,6 +45,11 @@ public class Distributore {
 
   /**
    * Crea un distributore.
+   *
+   * <p><strong>IMPORTANTE:</strong> Il chiamante NON deve modificare i binari passati
+   * dopo la costruzione del distributore. Il distributore assume la proprietà esclusiva
+   * dei binari forniti, che non devono essere modificati esternamente per preservare
+   * l'integrità dello stato del distributore.
    *
    * @param binari lista binari (non vuota)
    * @param fondoCassa fondo cassa iniziale
@@ -79,18 +87,7 @@ public class Distributore {
   /** Svuota il fondo cassa e restituisce le monete. */
   public Aggregato svuotaFondoCassa() {
     Aggregato copia = new Aggregato(fondoCassa);
-    for (Moneta m : Moneta.values()) {
-      int q = fondoCassa.quantita(m);
-      if (q > 0) {
-        Aggregato temp = new Aggregato();
-        temp.aggiungi(m, q);
-        try {
-          fondoCassa.rimuovi(temp);
-        } catch (AggregatoInsufficienteException e) {
-          throw new AssertionError(e);
-        }
-      }
-    }
+    fondoCassa.clear();
     return copia;
   }
 

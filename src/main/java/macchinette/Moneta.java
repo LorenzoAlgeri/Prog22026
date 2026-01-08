@@ -20,13 +20,16 @@
 package macchinette;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Monete disponibili: 1, 2, 5, 10, 20, 50 centesimi e 1, 2 euro.
  *
- * <p><strong>RI:</strong> garantito dall'enum (valore sempre valido)
+ * <p><strong>RI:</strong> garantito dall'enum; il valore è sempre valido e corrisponde
+ * a una delle otto denominazioni previste.
  *
- * <p><strong>AF:</strong> ogni valore rappresenta la moneta fisica con quel valore nominale
+ * <p><strong>AF:</strong> ogni costante dell'enum rappresenta una moneta fisica con il valore
+ * nominale specificato; ad esempio EURO_1 rappresenta la moneta da 1 euro.
  */
 public enum Moneta {
   CENT_1(1),
@@ -49,21 +52,26 @@ public enum Moneta {
     return valore;
   }
 
-  /** Restituisce la moneta corrispondente all'importo, o null se non esiste. */
-  public static Moneta fromImporto(Importo importo) {
+  /**
+   * Restituisce la moneta corrispondente all'importo specificato.
+   *
+   * @param importo l'importo da convertire in moneta
+   * @return Optional contenente la moneta se esiste, Optional.empty() altrimenti
+   */
+  public static Optional<Moneta> fromImporto(Importo importo) {
     Objects.requireNonNull(importo);
     for (Moneta m : values()) {
-      if (m.valore.equals(importo)) return m;
+      if (m.valore.equals(importo)) return Optional.of(m);
     }
-    return null;
+    return Optional.empty();
   }
 
   /**
    * Parsing di un importo come stringa.
    *
-   * @return la moneta o null se non corrisponde a nessuna moneta
+   * @return Optional contenente la moneta se corrisponde a una moneta valida, Optional.empty() altrimenti
    */
-  public static Moneta parse(String s) {
+  public static Optional<Moneta> parse(String s) {
     if (s == null) throw new NullPointerException();
     return fromImporto(Importo.parse(s));
   }

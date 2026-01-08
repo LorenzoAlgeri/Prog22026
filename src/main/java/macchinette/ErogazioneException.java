@@ -22,6 +22,13 @@ package macchinette;
 /**
  * Eccezione per erogazione impossibile.
  *
+ * <p><strong>RI:</strong> motivo non è null.
+ *
+ * <p><strong>AF:</strong> rappresenta una condizione di errore che impedisce l'erogazione
+ * di un prodotto dal distributore; il motivo specifica la causa: SLOT (indice binario non valido),
+ * EMPTY (binario selezionato vuoto), VALUE (pagamento insufficiente rispetto al prezzo),
+ * CHANGE (impossibile calcolare il resto con le monete disponibili).
+ *
  * <p>Motivi: SLOT (indice inesistente), EMPTY (binario vuoto),
  * VALUE (pagamento insufficiente), CHANGE (resto non calcolabile).
  */

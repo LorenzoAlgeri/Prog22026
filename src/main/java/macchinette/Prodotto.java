@@ -24,10 +24,13 @@ import java.util.Objects;
 /**
  * Prodotto vendibile, immutabile. Ordinamento: taglia, nome, prezzo.
  *
- * <p><strong>RI:</strong> nome != null &amp;&amp; !nome.isBlank() &amp;&amp; prezzo != null
- * &amp;&amp; taglia != null
+ * <p><strong>RI:</strong> nome non è null;
+ * nome non è una stringa vuota o contenente solo spazi bianchi;
+ * prezzo non è null;
+ * taglia non è null.
  *
- * <p><strong>AF:</strong> AF(nome, prezzo, taglia) = prodotto con quei valori
+ * <p><strong>AF:</strong> rappresenta un prodotto vendibile con un nome identificativo,
+ * un prezzo in formato Importo e una taglia che ne determina le dimensioni fisiche.
  */
 public final class Prodotto implements Comparable<Prodotto> {
 

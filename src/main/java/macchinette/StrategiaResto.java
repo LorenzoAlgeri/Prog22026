@@ -24,6 +24,13 @@ import java.util.Optional;
 /**
  * Strategia per il calcolo del resto.
  *
+ * <p><strong>RI:</strong> nessun invariante specifico per l'interfaccia.
+ *
+ * <p><strong>AF:</strong> rappresenta una strategia astratta per determinare come selezionare
+ * un insieme di monete da un aggregato disponibile per comporre esattamente un importo di resto;
+ * diverse implementazioni possono utilizzare approcci diversi (greedy da alto, greedy da basso,
+ * alternato, ecc.).
+ *
  * <p>Determina come selezionare monete per comporre esattamente un importo.
  */
 public interface StrategiaResto {

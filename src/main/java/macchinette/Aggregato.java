@@ -3,14 +3,19 @@ package macchinette;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 
 /**
  * Multi-insieme di monete.
  *
- * <p><strong>RI:</strong> monete != null, ogni entry ha chiave != null e valore &gt; 0
+ * <p><strong>RI:</strong> il campo monete non è null;
+ * per ogni entry (m, q) nella mappa: m non è null e q è strettamente positivo;
+ * non esistono chiavi con valore associato zero o negativo.
  *
- * <p><strong>AF:</strong> AF(monete) = multi-insieme dove ogni moneta m appare monete.get(m) volte
+ * <p><strong>AF:</strong> l'aggregato rappresenta il multi-insieme di monete dove ogni moneta m
+ * compare esattamente monete.get(m) volte; se una moneta non è presente come chiave,
+ * essa non fa parte dell'aggregato.
  */
 public class Aggregato implements Iterable<Map.Entry<Moneta, Integer>> {
 
@@ -106,6 +111,11 @@ public class Aggregato implements Iterable<Map.Entry<Moneta, Integer>> {
     return true;
   }
 
+  /** Rimuove tutte le monete dall'aggregato. */
+  public void clear() {
+    monete.clear();
+  }
+
   @Override
   public Iterator<Map.Entry<Moneta, Integer>> iterator() {
     return new TreeMap<>(monete).entrySet().iterator();
@@ -139,10 +149,10 @@ public class Aggregato implements Iterable<Map.Entry<Moneta, Integer>> {
       }
       if (q <= 0) throw new IllegalArgumentException("quantità non positiva");
 
-      Moneta m = Moneta.parse(tokens[1].trim());
-      if (m == null) throw new IllegalArgumentException("moneta non valida: " + tokens[1]);
+      Optional<Moneta> mOpt = Moneta.parse(tokens[1].trim());
+      if (mOpt.isEmpty()) throw new IllegalArgumentException("moneta non valida: " + tokens[1]);
 
-      result.aggiungi(m, q);
+      result.aggiungi(mOpt.get(), q);
     }
     return result;
   }

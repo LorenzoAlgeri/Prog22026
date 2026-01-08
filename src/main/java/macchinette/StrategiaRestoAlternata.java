@@ -6,6 +6,14 @@ import java.util.Optional;
 /**
  * Strategia che alterna tra monete di valore alto e basso.
  *
+ * <p><strong>RI:</strong> garantito dal pattern Singleton; esiste una sola istanza accessibile
+ * tramite INSTANCE.
+ *
+ * <p><strong>AF:</strong> rappresenta la strategia di calcolo del resto che alterna la selezione
+ * tra monete di valore alto e basso; inizia selezionando una moneta grande per ridurre rapidamente
+ * il resto, poi passa a una moneta piccola per affinare la composizione, continuando ad alternare;
+ * questo approccio cerca di bilanciare l'uso di monete grandi e piccole.
+ *
  * <p>
  * L'idea qui è alternare tra monete grandi e piccole perché mi sembrava
  * una via di mezzo tra le altre due strategie, comincio con una moneta grande

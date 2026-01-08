@@ -25,6 +25,15 @@ import java.util.Optional;
 /**
  * Strategia greedy che parte dalle monete di valore minore.
  *
+ * <p><strong>RI:</strong> garantito dal pattern Singleton; esiste una sola istanza accessibile
+ * tramite INSTANCE.
+ *
+ * <p><strong>AF:</strong> rappresenta la strategia di calcolo del resto che utilizza un approccio
+ * greedy partendo dalle monete di valore più basso; ad ogni passo seleziona il maggior numero
+ * possibile di monete della denominazione più piccola disponibile che non supera il resto rimanente;
+ * tende a utilizzare più monete rispetto alla strategia H, ma come quella non garantisce
+ * di trovare sempre una soluzione anche quando esiste.
+ *
  * <p>Usa più monete rispetto a H, ma non garantisce di trovare soluzione.
  */
 public class StrategiaRestoL implements StrategiaResto {

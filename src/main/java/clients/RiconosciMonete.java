@@ -1,4 +1,5 @@
 package clients;
+import java.util.Optional;
 import java.util.Scanner;
 import macchinette.Importo;
 import macchinette.Moneta;
@@ -10,11 +11,11 @@ public class RiconosciMonete {
 
     while (scanner.hasNextLine()) {
       try {
-        Moneta moneta = Moneta.fromImporto(Importo.parse(scanner.nextLine()));
-        if (moneta == null) {
+        Optional<Moneta> moneta = Moneta.fromImporto(Importo.parse(scanner.nextLine()));
+        if (moneta.isEmpty()) {
           System.out.println("invalid");
         } else {
-          System.out.println(moneta);
+          System.out.println(moneta.get());
         }
       } catch (IllegalArgumentException e) {
         System.out.println("invalid");

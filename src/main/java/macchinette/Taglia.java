@@ -22,9 +22,11 @@ package macchinette;
 /**
  * Taglia di un prodotto o binario. Ordinamento naturale: S &lt; M &lt; L.
  *
- * <p><strong>RI:</strong> garantito dall'enum
+ * <p><strong>RI:</strong> garantito dall'enum; il valore è sempre uno tra S, M, L.
  *
- * <p><strong>AF:</strong> S = piccola, M = media, L = grande
+ * <p><strong>AF:</strong> rappresenta la taglia fisica di un prodotto o la capacità dimensionale
+ * di un binario; S rappresenta la taglia piccola, M rappresenta la taglia media,
+ * L rappresenta la taglia grande.
  */
 public enum Taglia {
   S,
